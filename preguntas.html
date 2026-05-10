@@ -1,165 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Vocacional ITA - Evaluación</title>
-    
-    <style>
-        :root { 
-            --primario: #1565c0; 
-            --error: #d9534f; 
-            --exito: #2cb2ff; 
-            --alerta: #ffc107; 
-            --fondo: #f0f2f5;
-        }
-
-        body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            background: var(--fondo); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            overflow-x: hidden;
-        }
-
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-       .toast {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 500;
-            color: #333;
-            border-left: 5px solid var(--primario);
-            animation: slideIn 0.4s ease forwards;
-        }
-
-       .toast.error { border-left-color: var(--error); }
-       .toast.success { border-left-color: var(--exito); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes fadeOut {
-            to { transform: translateY(-20px); opacity: 0; }
-        }
-
-       .card { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            width: 100%; 
-            max-width: 500px; 
-            text-align: center; 
-        }
-
-       .hidden { display: none!important; }
-        
-        h2 { margin-top: 0; color: var(--primario); }
-        p { color: #555; }
-        
-        button { 
-            width: 100%; 
-            padding: 12px; 
-            background-color: var(--primario); 
-            color: white; 
-            border: none; 
-            border-radius: 6px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            margin-top: 10px; 
-            transition: 0.3s; 
-        }
-
-        button:hover { filter: brightness(1.1); }
-        button:disabled { background-color: #ccc; cursor: not-allowed; color: #666; }
-        button.secundario { background-color: #6c757d; }
-        button.secundario:hover { background-color: #5a6268; }
-
-       .progreso { font-size: 13px; color: #666; margin-bottom: 20px; font-weight: bold; }
-        #mostrarPregunta { font-size: 16px; color: #333; font-weight: 600; margin-bottom: 20px; min-height: 60px; display: flex; align-items: center; justify-content: center;}
-
-       .opciones-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-       .opciones-container label {
-            background: #f8f9fa;
-            padding: 12px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.2s ease;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-       .opciones-container label:hover { background: #e2e6ea; }
-       .opciones-container label.seleccionado {
-            border-color: var(--primario);
-            background-color: #eef5ff;
-            font-weight: bold;
-            color: var(--primario);
-        }
-
-        input[type="radio"] { 
-            accent-color: var(--primario);
-            transform: scale(1.2);
-            margin: 0;
-            cursor: pointer;
-        }
-
-       .botones-test { display: flex; gap: 10px; }
-
-       .carrera-destacada {
-            font-size: 26px;
-            color: var(--exito);
-            margin: 15px 0;
-            font-weight: 900;
-        }
-        
-       .descripcion-perfil {
-            font-size: 15px;
-            color: #444;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            text-align: justify;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--exito);
-        }
-        
-       .toque-personal {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px dashed #ccc;
-            font-style: italic;
-            color: #2c3e50;
-        }
-    </style>
+    <link rel="stylesheet" href="preguntashtml.css">
 </head>
 <body>
 
@@ -197,6 +43,9 @@
     </div>
 
     <script>
+        // 1. Inicializar EmailJS
+        emailjs.init("2SUvMS3C3ezFvL5SM"); 
+
         function notify(mensaje, tipo = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -209,8 +58,12 @@
             }, 3000);
         }
 
-        // Puedes llenar estas variables después usando PHP si lo deseas (Ej. let nombreUsuario = "<?php echo $_SESSION['nombre'];?>";)
+        // 2. Obtener el nombre del usuario desde la página de inicio
         let nombreUsuario = ""; 
+        const datosUsuario = JSON.parse(localStorage.getItem('usuarioActivo'));
+        if (datosUsuario && datosUsuario.nombre) {
+            nombreUsuario = ", " + datosUsuario.nombre.split(' ')[0]; // Toma el primer nombre
+        }
 
         const basePreguntas = [
             { c: "Química", t: "[Q] Me resulta fascinante la idea de pasar largas horas experimentando en un laboratorio para descubrir cómo transformar materias primas." },
@@ -228,7 +81,6 @@
             { c: "Sistemas", t: " Me resulta altamente estimulante el aprendizaje autodidacta continuo sobre nuevos lenguajes de programación y frameworks." }
         ];
 
-        // Mezclar las preguntas de forma aleatoria (Fisher-Yates)
         function barajar(array) {
             let currentIndex = array.length, randomIndex;
             while (currentIndex!= 0) {
@@ -255,7 +107,6 @@
             "Gestión Empresarial": "Tienes clara madera de líder y una gran visión estratégica para los negocios. Tu habilidad para evaluar riesgos, gestionar recursos financieros y potenciar el capital humano te guiará al éxito corporativo y administrativo."
         };
 
-        // Textos Híbridos para resultados combinados
         const combinacionesHibridas = {
             "Química": {
                 "Mecatrónica": "Además, tu afinidad por la Mecatrónica te da un perfil excelente para automatizar laboratorios o diseñar instrumentación química de alta precisión.",
@@ -289,7 +140,6 @@
             }
         };
 
-        // Iniciar con las preguntas aleatorias
         let preguntasActivas = barajar([...basePreguntas]);
         let respuestas = Array(15).fill(null);
         let indice = 0;
@@ -348,8 +198,8 @@
                 prio: prioridad[c]
             })).sort((a, b) => {
                 if (b.score!== a.score) return b.score - a.score; 
-                if (b.p3!== a.p3) return b.p3 - a.p3;             
-                if (b.p2!== a.p2) return b.p2 - a.p2;             
+                if (b.p3!== a.p3) return b.p3 - a.p3;            
+                if (b.p2!== a.p2) return b.p2 - a.p2;            
                 return b.prio - a.prio;                            
             });
         }
@@ -366,6 +216,7 @@
                 valor: parseInt(seleccion.value, 10)
             };
 
+            // Evaluar necesidad de desempate
             if (indice === 12 && preguntasActivas.length === 13) {
                 let ranking = evaluarResultados();
                 
@@ -382,6 +233,7 @@
                 indice++;
                 renderizarPregunta();
             } else {
+                // FIN DEL TEST
                 let rankingFinal = evaluarResultados();
                 
                 let carreraGanadora = rankingFinal[0].carrera;
@@ -407,27 +259,22 @@
                 let textoHibrido = "";
                 
                 if (carreraSecundaria && rankingFinal[1].score > 0) {
-                    textoHibrido = `<div class="toque-personal"><strong>🌟 Tu perfil interdisciplinario:</strong> ${combinacionesHibridas[carreraGanadora][carreraSecundaria]}</div>`;
+                    textoHibrido = `<div class="toque-personal" style="margin-top: 15px; background: #eef5fa; padding: 10px; border-radius: 8px;"><strong>🌟 Tu perfil interdisciplinario:</strong> ${combinacionesHibridas[carreraGanadora][carreraSecundaria]}</div>`;
                 }
                 
                 contenedorDesc.innerHTML = `<p>${textoPrincipal}</p>${textoHibrido}`;
-                                            
+                                                            
                 notify("Test completado y evaluado con éxito", "success");
 
+                // Guardar en Base de Datos
                 fetch("guardar_resultado.php", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: "carrera=" + encodeURIComponent(carreraGanadora)
-                })
-              .then(res => res.text())
-              .then(data => {
-                    if (data.trim()!== "ok") {
-                        console.error("Error guardando el resultado:", data);
-                    }
-                })
-              .catch(err => console.error("Error de conexión:", err));
+                }).catch(err => console.error("Error BD:", err));
+
+                // 🚀 AQUÍ SE DISPARA LA MAGIA DE WHATSAPP Y CORREO
+                enviarResultadosFinales(carreraGanadora);
             }
         });
 
@@ -438,8 +285,82 @@
             }
         });
 
-        // Iniciar el renderizado
+        // Iniciar la primera pregunta
         renderizarPregunta();
+
+        // 3. FUNCIÓN DE ENVÍO DE RESULTADOS (CORREO + WHATSAPP)
+        function enviarResultadosFinales(carreraGanadora) {
+            if (!datosUsuario) {
+                console.error("No se encontraron los datos del usuario en localStorage.");
+                return;
+            }
+
+            // Aquí tomamos los datos que se guardaron en inicio.html
+            const nombre = datosUsuario.nombre || "Estudiante";
+            const telefono = datosUsuario.telefono;
+            const correo = datosUsuario.email;
+
+            let mensajeBase = "";
+            
+            switch(carreraGanadora) {
+                case "Sistemas":
+                    mensajeBase = `¡Hola ${nombre}! 🎓\n\nAquí están tus resultados del Test Vocacional:\n\nTu perfil encaja perfectamente con *Ingeniería en Sistemas Computacionales* 💻. ¡Tienes el pensamiento analítico ideal para el desarrollo de software y la tecnología!`;
+                    break;
+                case "Industrial":
+                    mensajeBase = `¡Hola ${nombre}! 🎓\n\nAquí están tus resultados del Test Vocacional:\n\nTu perfil es ideal para *Ingeniería Industrial* ⚙️. ¡Tienes madera para liderar proyectos, optimizar procesos y tomar grandes decisiones!`;
+                    break;
+                case "Gestión Empresarial":
+                    mensajeBase = `¡Hola ${nombre}! 🎓\n\nAquí están tus resultados del Test Vocacional:\n\nDestacas para *Ingeniería en Gestión Empresarial* 📊. ¡Tu capacidad de organización y visión de negocios es excelente!`;
+                    break;
+                case "Química":
+                    mensajeBase = `¡Hola ${nombre}! 🎓\n\nAquí están tus resultados del Test Vocacional:\n\nTu perfil encaja perfectamente con *Ingeniería Química* 🧪. ¡Tienes una mente investigadora ideal para la transformación de la materia!`;
+                    break;
+                case "Mecatrónica":
+                    mensajeBase = `¡Hola ${nombre}! 🎓\n\nAquí están tus resultados del Test Vocacional:\n\nTu perfil es ideal para *Ingeniería Mecatrónica* 🤖. ¡Tu fascinación por integrar hardware, electrónica y programación es excelente!`;
+                    break;
+                default:
+                    mensajeBase = `¡Hola ${nombre}! 🎓\n\nHemos analizado tus respuestas y tienes un perfil multidisciplinario excelente. ¡Acércate a orientación vocacional para explorar tus opciones en el tecnológico!`;
+            }
+
+            const enlaceTec = "\n\n📄 *¿Listo para dar el siguiente paso?*\nPara saber cómo inscribirte al Tec, ingresa al siguiente enlace:\nhttps://www.itatitalaquia.edu.mx/documentos/CPresencial.pdf";
+            const mensajeWhatsApp = mensajeBase + enlaceTec;
+
+            // --- Enviar WhatsApp (Si hay teléfono) ---
+            if (telefono) {
+                const paramsWA = new URLSearchParams();
+                paramsWA.append('telefono', telefono);
+                paramsWA.append('mensaje', mensajeWhatsApp);
+
+                fetch("enviar_resultado_wa.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: paramsWA.toString()
+                })
+                .then(res => res.text())
+                .then(data => {
+                    if(data.trim() === "ok") {
+                        console.log("WhatsApp enviado correctamente.");
+                    } else {
+                        console.error("Error PHP WhatsApp:", data);
+                    }
+                })
+                .catch(err => console.error("Fallo Fetch WhatsApp:", err));
+            }
+
+            // --- Enviar Correo (Si hay correo) usando el NUEVO ID de Plantilla ---
+            if (correo) {
+                const mensajeCorreo = `Tu carrera ideal es: Ingeniería en ${carreraGanadora}. Te deseamos mucho éxito en tu próxima etapa universitaria.`;
+
+                emailjs.send("service_fpe7hsg", "template_j66nguk", { 
+                    to_email: correo,
+                    nombre_usuario: nombre,
+                    mensaje_resultado: mensajeCorreo
+                }).then(() => {
+                    console.log("Correo enviado exitosamente.");
+                    setTimeout(() => notify("Resultados enviados a tu WhatsApp y Correo 📱📧", "success"), 2000);
+                }).catch(err => console.error("Error EmailJS:", err));
+            }
+        }
     </script>
 </body>
 </html>

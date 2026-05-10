@@ -1,0 +1,173 @@
+:root { 
+    --primario: #1565c0; 
+    --error: #d9534f; 
+    --exito: #28a745; 
+    --alerta: #ffc107; 
+    --fondo: #f0f2f5;
+}
+
+body { 
+    font-family: 'Segoe UI', system-ui, sans-serif; 
+    background: var(--fondo); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+    margin: 0; 
+    overflow-x: hidden;
+    padding: 0;
+}
+
+/* Contenedor de Notificaciones */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.toast {
+    background: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    color: #333;
+    border-left: 5px solid var(--primario);
+    animation: slideIn 0.4s ease forwards;
+}
+
+.toast.error { border-left-color: var(--error); }
+.toast.success { border-left-color: var(--exito); }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    to { transform: translateY(-20px); opacity: 0; }
+}
+
+/* Estilos de la Tarjeta */
+.card { 
+    background: white; 
+    padding: 30px; 
+    border-radius: 15px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+    width: 100%; 
+    max-width: 400px; 
+    text-align: center; 
+}
+
+.hidden { display: none; }
+
+input, select { 
+    width: 100%; 
+    padding: 12px; 
+    margin: 8px 0; 
+    border: 1px solid #ccc; 
+    border-radius: 6px; 
+    box-sizing: border-box; 
+    transition: all 0.3s ease; 
+}
+
+/* Estilo animado para campo extra de escuela */
+#extra-school-info {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s ease, opacity 0.4s;
+    opacity: 0;
+}
+#extra-school-info.show {
+    max-height: 100px;
+    opacity: 1;
+    margin-bottom: 5px;
+}
+
+.input-error { border: 2px solid var(--error) !important; background-color: #fff8f8; }
+.input-success { border: 2px solid var(--exito) !important; }
+
+button { 
+    width: 100%; 
+    padding: 12px; 
+    background-color: var(--primario); 
+    color: white; 
+    border: none; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    margin-top: 10px; 
+    transition: 0.3s; 
+}
+
+button:hover { filter: brightness(1.1); }
+
+.links { margin-top: 15px; font-size: 13px; color: var(--primario); cursor: pointer; }
+.links:hover { text-decoration: underline; }
+/* --- ESTILOS PARA VALIDACIONES Y CONTRASEÑAS --- */
+.password-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-container input {
+    padding-right: 40px; /* Deja espacio para que el texto no se encime en el ícono */
+}
+
+/* Ícono del ojito profesional */
+.toggle-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s;
+}
+
+.toggle-eye:hover { color: var(--primario); }
+.toggle-eye svg { width: 20px; height: 20px; }
+
+/* Barra de progreso dinámica */
+.strength-meter {
+    height: 5px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    margin-top: -3px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+#strength-bar {
+    height: 100%;
+    width: 0%;
+    background-color: transparent;
+    transition: width 0.4s ease, background-color 0.4s ease;
+}
+
+/* Mensajes de error y sus colores dinámicos */
+.error-text {
+    font-size: 12px;
+    margin-top: -5px;
+    margin-bottom: 15px;
+    display: block;
+    text-align: left;
+    transition: all 0.3s;
+}
+
+/* LA MAGIA PARA ARREGLAR TUS ESPACIOS */
+.error-text:empty {
+    display: none; 
+}
+
+.text-weak { color: var(--error); }
+.text-medium { color: var(--alerta); }
+.text-strong { color: var(--exito); }

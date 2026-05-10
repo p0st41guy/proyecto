@@ -1,0 +1,154 @@
+
+        :root { 
+            --primario: #1565c0; 
+            --error: #d9534f; 
+            --exito: #2cb2ff; 
+            --alerta: #ffc107; 
+            --fondo: #f0f2f5;
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--fondo); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            overflow-x: hidden;
+        }
+
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+       .toast {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: #333;
+            border-left: 5px solid var(--primario);
+            animation: slideIn 0.4s ease forwards;
+        }
+
+       .toast.error { border-left-color: var(--error); }
+       .toast.success { border-left-color: var(--exito); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { transform: translateY(-20px); opacity: 0; }
+        }
+
+       .card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 500px; 
+            text-align: center; 
+        }
+
+       .hidden { display: none!important; }
+        
+        h2 { margin-top: 0; color: var(--primario); }
+        p { color: #555; }
+        
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background-color: var(--primario); 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: 0.3s; 
+        }
+
+        button:hover { filter: brightness(1.1); }
+        button:disabled { background-color: #ccc; cursor: not-allowed; color: #666; }
+        button.secundario { background-color: #6c757d; }
+        button.secundario:hover { background-color: #5a6268; }
+
+       .progreso { font-size: 13px; color: #666; margin-bottom: 20px; font-weight: bold; }
+        #mostrarPregunta { font-size: 16px; color: #333; font-weight: 600; margin-bottom: 20px; min-height: 60px; display: flex; align-items: center; justify-content: center;}
+
+       .opciones-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+       .opciones-container label {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+       .opciones-container label:hover { background: #e2e6ea; }
+       .opciones-container label.seleccionado {
+            border-color: var(--primario);
+            background-color: #eef5ff;
+            font-weight: bold;
+            color: var(--primario);
+        }
+
+        input[type="radio"] { 
+            accent-color: var(--primario);
+            transform: scale(1.2);
+            margin: 0;
+            cursor: pointer;
+        }
+
+       .botones-test { display: flex; gap: 10px; }
+
+       .carrera-destacada {
+            font-size: 26px;
+            color: var(--exito);
+            margin: 15px 0;
+            font-weight: 900;
+        }
+        
+       .descripcion-perfil {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: justify;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--exito);
+        }
+        
+       .toque-personal {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+            font-style: italic;
+            color: #2c3e50;
+        }
