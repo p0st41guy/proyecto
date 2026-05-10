@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Vocacional ITA - Acceso</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <style>
+        :root { 
+            --primario: #1565c0; 
+            --error: #d9534f; 
+            --exito: #28a745; 
+            --alerta: #ffc107; 
+            --fondo: #f0f2f5;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--fondo); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            overflow-x: hidden;
+        }
+
+        /* Contenedor de Notificaciones */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: #333;
+            border-left: 5px solid var(--primario);
+            animation: slideIn 0.4s ease forwards;
+        }
+
+        .toast.error { border-left-color: var(--error); }
+        .toast.success { border-left-color: var(--exito); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { transform: translateY(-20px); opacity: 0; }
+        }
+
+        /* Estilos de la Tarjeta */
+        .card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center; 
+        }
+
+        .hidden { display: none; }
+        
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            transition: all 0.3s ease; 
+        }
+
+        /* Estilo animado para campo extra de escuela */
+        #extra-school-info {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s ease, opacity 0.4s;
+            opacity: 0;
+        }
+        #extra-school-info.show {
+            max-height: 100px;
+            opacity: 1;
+            margin-bottom: 5px;
+        }
+
+        .input-error { border: 2px solid var(--error) !important; background-color: #fff8f8; }
+        .input-success { border: 2px solid var(--exito) !important; }
+
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background-color: var(--primario); 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: 0.3s; 
+        }
+
+        button:hover { filter: brightness(1.1); }
+        
+        .links { margin-top: 15px; font-size: 13px; color: var(--primario); cursor: pointer; }
+        .links:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <div class="card">
+        <div id="view-login">
+            <h2 style="color: var(--primario);">Acceso Vocacional 2026</h2>
+            <p>Ingresa tus credenciales institucionales.</p>
+            <input type="email" id="login-email" placeholder="Correo Institucional">
+            <input type="password" id="login-pass" placeholder="Contraseña">
+            <button onclick="login()">Iniciar Sesión</button>
+            <div class="links" onclick="mostrarVista('view-register')">¿No tienes cuenta? <b>Regístrate aquí</b></div>
+            <div class="links" onclick="mostrarVista('view-forgot')" style="color: #666;">Olvidé mi contraseña</div>
+        </div>
+        <form action="crear_cuenta.php" method="POST">
+        <div id="view-register" class="hidden">
+            <h2>Crear Cuenta</h2>
+            <p>Únete al sistema del ITA.</p>
+            <input type="text" name="nombre" id="reg-nombre" placeholder="Nombre Completo">
+            <input type="email" name="correo" id="reg-email" placeholder="Correo Institucional">
+            <input type="tel" name="telefono" id="reg-tel" placeholder="Número de Teléfono">
+            
+            <input list="escuelas-hidalgo" name="escuela" id="reg-escuela" placeholder="Escuela de Procedencia" oninput="handleSchoolInput(this)">
+            <datalist id="escuelas-hidalgo">
+                <option value="CETis No. 26">
+                <option value="Preparatoria Fray Diego de Rodríguez">
+                <option value="COBAEH – Plantel Atitalaquia">
+                <option value="Preparatoria Oficial de Tula">
+                <option value="COBAEH – Plantel Tula">
+                <option value="Preparatoria Federal por Cooperación “Melchor Ocampo”">
+                <option value="Preparatoria Particular “Sor Juana Inés de la Cruz”">
+                <option value="Preparatoria Oficial de Mixquiahuala">
+                <option value="COBAEH – Plantel Mixquiahuala">
+                <option value="Preparatoria Particular “José María Morelos y Pavón”">
+                <option value="Preparatoria Particular “Guillermo Rossell”">
+                <option value="Preparatoria Oficial de Ixmiquilpan">
+                <option value="COBAEH – Plantel Ixmiquilpan">
+                <option value="Preparatoria Particular “Benito Juárez”">
+                <option value="Preparatoria Particular “Sor Juana Inés de la Cruz” (Ixmiquilpan)">
+                <option value="Preparatoria Oficial de Actopan">
+                <option value="COBAEH – Plantel Actopan">
+                <option value="Preparatoria Particular “José Vasconcelos”">
+                <option value="Preparatoria Oficial de Chilcuautla">
+                <option value="COBAEH – Plantel Chilcuautla">
+                <option value="CECyTE – Plantel Tetepango">
+                <option value="CECyTE – Plantel Atitalaquia">
+                <option value="Preparatoria Oficial de Alfajayucan">
+                <option value="COBAEH – Plantel Alfajayucan">
+                <option value="Preparatoria Oficial de El Cardonal">
+                <option value="COBAEH – Plantel El Cardonal">
+                <option value="Preparatoria Oficial de Tasquillo">
+                <option value="COBAEH – Plantel Tasquillo">
+                <option value="Preparatoria Oficial de Huichapan">
+                <option value="COBAEH – Plantel Huichapan">
+                <option value="Preparatoria Oficial de Tezontepec de Aldama">
+                <option value="COBAEH – Plantel Tezontepec de Aldama">
+                <option value="Preparatoria Oficial de Nopala">
+                <option value="COBAEH – Plantel Nopala">
+                <option value="Preparatoria Oficial de Zimapán">
+                <option value="CETis No. 91">
+                <option value="Universidad Autónoma del Estado de Hidalgo – Plantel Atotonilco de Tula">
+                <option value="Escuela Superior de Atotonilco de Tula, Hgo.">
+                <option value="Preparatoria Oficial de Chapantongo">
+                <option value="COBAEH – Plantel Chapantongo">
+                <option value="Preparatoria Oficial de Ajacuba">
+                <option value="COBAEH – Plantel Ajacuba">
+                <option value="Preparatoria Oficial de San Agustín Tlaxiaca">
+                <option value="COBAEH – Plantel San Agustín Tlaxiaca">
+                <option value="Preparatoria Oficial de Francisco I. Madero">
+                <option value="COBAEH – Plantel Francisco I. Madero">
+                <option value="Preparatoria Oficial de Tlaxcoapan">
+                <option value="COBAEH – Plantel Tlaxcoapan">
+                <option value="Otra escuela...">
+            </datalist>
+
+            <div id="extra-school-info">
+                <input type="text" id="reg-otra-escuela" placeholder="Nombre o Clave de la escuela">
+            </div>
+           <input type="password" name="clave" id="reg-pass" placeholder="Contraseña (mín. 6)" oninput="validarPassword()">
+
+          <input type="password" id="reg-pass-conf" placeholder="Confirmar Contraseña" oninput="validarPassword()">
+            <button type="button" id="btn-registrar" onclick="procesoRegistro()">Continuar</button>
+            
+             </form>
+            <div class="links" onclick="mostrarVista('view-login')">Volver al Login</div>
+        </div>
+
+        <div id="view-verify" class="hidden">
+            <h2>Verifica tu Correo</h2>
+            <p>Escribe el código de 6 dígitos.</p>
+            <input type="number" id="input-codigo" placeholder="000000">
+            <button onclick="confirmarCodigo()">Verificar e Ingresar</button>
+        </div>
+        
+
+        <div id="view-forgot" class="hidden">
+            <h2>Recuperar</h2>
+            <input type="email" id="forgot-email" placeholder="Escribe tu correo">
+            <button onclick="recuperarPass()">Enviar Código</button>
+            <div class="links" onclick="mostrarVista('view-login')">Regresar</div>
+        </div>
+
+        <div id="view-new-pass" class="hidden">
+            <h2>Nueva Contraseña</h2>
+            <input type="password" id="new-pass" placeholder="Nueva Contraseña">
+            <input type="password" id="new-pass-conf" placeholder="Confirmar">
+            <button onclick="guardarNuevaPass()">Actualizar Datos</button>
+        </div>
+    </div>
+
+    <script>
+        const PUBLIC_KEY = "2SUvMS3C3ezFvL5SM"; 
+        const SERVICE_ID = "service_fpe7hsg";    
+        const TEMPLATE_ID = "template_k5qb5bi"; 
+        
+        emailjs.init(PUBLIC_KEY);
+
+        let codigoGenerado = null;
+        let datosTemporales = {};
+        let modoRecuperacion = false;
+
+        // --- SISTEMA DE NOTIFICACIONES ANIMADAS ---
+        function notify(mensaje, tipo = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            toast.innerHTML = `<span>${tipo === 'error' ? '⚠️' : '✅'}</span> ${mensaje}`;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = "fadeOut 0.5s ease forwards";
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // Lógica de autocompletado y animación de escuela
+        function handleSchoolInput(input) {
+            const extra = document.getElementById('extra-school-info');
+            if (input.value === "Otra escuela...") {
+                extra.classList.add('show');
+            } else {
+                extra.classList.remove('show');
+            }
+        }
+
+        function mostrarVista(id) {
+            document.querySelectorAll('.card div').forEach(v => v.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function validarPassword() {
+            const p = document.getElementById('reg-pass');
+            const c = document.getElementById('reg-pass-conf');
+            p.className = p.value.length >= 6 ? "input-success" : "input-error";
+            if(c.value) c.className = (c.value === p.value) ? "input-success" : "input-error";
+        }
+
+        function login() {
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-pass').value;
+
+    fetch("login.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `correo=${encodeURIComponent(email)}&clave=${encodeURIComponent(pass)}`
+    })
+    .then(res => res.text())
+    .then(data => {
+        if (data.trim() === "ok") {
+            notify("Ingreso exitoso", "success");
+            setTimeout(() => window.location.href = "preguntas.html", 1000);
+        } else {
+            notify("Credenciales incorrectas", "error");
+        }
+    })
+    .catch(() => {
+        notify("Error de conexión", "error");
+    });
+}
+
+       
+
+  function procesoRegistro() {
+    const email = document.getElementById('reg-email').value;
+    const pass = document.getElementById('reg-pass').value;
+    const conf = document.getElementById('reg-pass-conf').value;
+    const escuelaSel = document.getElementById('reg-escuela').value;
+    const otraEscuela = document.getElementById('reg-otra-escuela').value;
+
+    let escuelaFinal = (escuelaSel === "Otra escuela...") ? otraEscuela : escuelaSel;
+    
+     if (!email || !escuelaFinal || pass !== conf || pass.length < 6) {
+    notify("Verifica los datos", "error");
+    return;
+}
+
+
+mostrarVista('view-verify');
+
+//  envío sin recargar la página
+const form = document.querySelector("form");
+const formData = new FormData(form);
+
+    fetch("crear_cuenta.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log("RESPUESTA:", data);
+       if (data.trim() === "ok") {
+            notify("Registro exitoso", "success");
+        } else {
+            notify("Error al registrar", "error");
+        }
+    })
+    .catch(error => {
+        notify("Error de conexión", "error");
+    });
+
+    // 🔹 lo demás de tu lógica sigue igual
+    codigoGenerado = Math.floor(100000 + Math.random() * 900000);
+    datosTemporales = { 
+        nombre: document.getElementById('reg-nombre').value, 
+        email, 
+        escuela: escuelaFinal,
+        pass 
+    };
+    
+    notify("Enviando código...");
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+        to_email: email,
+        nombre_usuario: datosTemporales.nombre,
+        codigo_random: codigoGenerado
+    }).then(() => {
+        notify("Código enviado al correo", "success");
+        mostrarVista('view-verify');
+    });
+
+
+  }
+
+        function confirmarCodigo() {
+            const val = document.getElementById('input-codigo').value;
+            if (val == codigoGenerado) {
+                if(modoRecuperacion) {
+                    mostrarVista('view-new-pass');
+                } else {
+                    localStorage.setItem(datosTemporales.email, JSON.stringify(datosTemporales));
+                    notify("Cuenta creada con éxito", "success");
+                    setTimeout(() => window.location.href = "preguntas.html", 1500);
+                }
+            } else {
+                notify("Código incorrecto", "error");
+            }
+        }
+
+       function recuperarPass() {
+    const email = document.getElementById('forgot-email').value;
+
+    fetch("verificar_correo.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `correo=${encodeURIComponent(email)}`
+    })
+    .then(res => res.text())
+    .then(data => {
+
+        if (data.trim() === "ok") {
+
+            modoRecuperacion = true;
+            codigoGenerado = Math.floor(100000 + Math.random() * 900000);
+            datosTemporales.email = email;
+
+            notify("Enviando código...");
+
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+                to_email: email,
+                nombre_usuario: "Usuario",
+                codigo_random: codigoGenerado
+            }).then(() => {
+                notify("Código enviado", "success");
+                mostrarVista('view-verify');
+            });
+
+        } else {
+            notify("El correo no existe en la base de datos", "error");
+        }
+
+    })
+    .catch(() => {
+        notify("Error de conexión", "error");
+    });
+}
+
+       function guardarNuevaPass() {
+    const p1 = document.getElementById('new-pass').value;
+    const p2 = document.getElementById('new-pass-conf').value;
+
+    if (p1 === p2 && p1.length >= 6) {
+
+        fetch("actualizar_password.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `correo=${encodeURIComponent(datosTemporales.email)}&clave=${encodeURIComponent(p1)}`
+        })
+        .then(res => res.text())
+        .then(data => {
+            if (data.trim() === "ok") {
+                notify("Contraseña actualizada", "success");
+                setTimeout(() => window.location.href = "inicio.html", 1000);
+            } else {
+                notify("Error al actualizar", "error");
+            }
+        })
+        .catch(() => {
+            notify("Error de conexión", "error");
+        });
+
+    } else {
+        notify("Error en contraseñas", "error");
+    }
+}
+    </script>
+</body>
+
+
+</html>
