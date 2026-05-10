@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="diseño_B.css" rel="stylesheet" type="text/css">
+    <title>Página de Bienvenida</title>
+   
+</head>
+<body>
+    <header>
+        <div class="container">
+            <img src="images.png" width="250" height="120">   
+            <h1>Instituto Tecnologico de Atitalaquia</h1>
+            <img src="SEP.png" width="300" height="100">
+       
+</div>
+    </header>
+    <nav>
+        <ul>
+            <li><a onclick="showSection()">Inicio</a></li>
+            <li><a>Conocenos</a>
+                <ul>
+                    <li><a href="http://www.itatitalaquia.edu.mx/historia.html">Historia</a></li>
+                    <li><a href="http://www.itatitalaquia.edu.mx/mascota.html">Mascota</a></li>
+                    <li><a href="http://www.itatitalaquia.edu.mx/directorio.html">Directorio</a></li>
+                    <li><a href="https://www.itatitalaquia.edu.mx/documentos/Organigrama.pdf">Organigrama</a></li>
+                    <li><a href="https://www.google.com/maps/place/20%C2%B003'17.7%22N+99%C2%B011'51.2%22W/@20.054904,-99.1971701,262m/data=!3m1!1e3!4m2!3m1!1s0x0:0x0">Ubicación</a></li>
+                    <li><a href="https://www.itatitalaquia.edu.mx/index1b1e.html?vista=Normateca">Normateca</a></li>              
+                </ul>
+            </li> 
+            <li><a>Oferta Educativa</a>
+                <ul>
+                    <li><a href="http://www.itatitalaquia.edu.mx/carreras/quimica.html">ING.Quimica</a></li>
+                    <li><a href="http://www.itatitalaquia.edu.mx/carreras/industrial.html">ING.Industrial</a></li>
+                    <li><a href="http://www.itatitalaquia.edu.mx/carreras/mecatronica.html">ING.Mecatronica</a></li>
+                    <li><a href="http://www.itatitalaquia.edu.mx/carreras/sistemas.html">ING.En Sistemas Computacionales</a>
+                    <li><a href="http://www.itatitalaquia.edu.mx/carreras/administracion.html">ING.En Administracion</a></li>             
+                </ul>
+            </li>
+            <li><a>Departamentos</a>
+                <ul>
+                    <li><a href="https://www.itatitalaquia.edu.mx/departamentos/dda.html">Departamento de desarrollo academico</a></li>
+                    <li><a href="https://www.itatitalaquia.edu.mx/departamentos/vin.html">Departamento de Gestión Tecnológica y Vinculación</a></li>
+                    <li><a href="https://www.itatitalaquia.edu.mx/#">División de Estudios Profecionales</a></li>
+                    <li><a href="https://www.itatitalaquia.edu.mx/departamentos/computo.html">Centro de cómputo</a>
+                    <li><a href="https://www.itatitalaquia.edu.mx/departamentos/extraes.html">Actividades Extraescolares</a></li>                      
+                </ul>
+            </li>
+            <li><a href="https://www.itatitalaquia.edu.mx/images/Tequios.png">Tequios</a>
+               
+            </li>
+            <li><a>Aspirantes</a>
+                <ul>
+                     <li><a href="https://www.itatitalaquia.edu.mx/documentos/CPresencial.pdf">Convocatoria presencial</a></li>
+                    <li><a href="https://www.itatitalaquia.edu.mx/documentos/CVirtual.pdf">Convocatoria virtual</a></li>
+                    <li><a href="https://www.itatitalaquia.edu.mx/documentos/Convocatoria.pdf">Pasos a seguir</a></li>
+                    <li><a href="http://201.132.29.146/">Pre registro</a>
+                    <li><a href="https://www.itatitalaquia.edu.mx/documentos/Guia_Evaluatec_ITAt%202026%20vf.pdf">Guías</a></li>               
+                </ul>
+            </li>
+            <li><a>Nuestras redes</a>
+                <ul>
+                    <li><a href="#" onclick="showSection('section2')">Redes</a></li>                
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="section1" class="section">
+        <div class="welcome-container">
+            <h2>submenu1</h2>
+            <div class="container">
+                <p>Cosa</p>
+            </div>        
+        </div>
+    </div>
+
+    <div id="section2" class="section">
+    <div class="welcome-container">
+        <h2>Redes sociales</h2>
+        <div class="container">
+            <p>Click para viajar a nuestras redes sociales</p>
+        </div>  
+
+        <!-- Lista de redes sociales con animación -->
+        <div class="social-container">
+            <ul class="social-list">
+                <li>
+                    <a href="https://www.facebook.com/share/1JUcjpTBNw/" target="_blank">
+                        <img src="Face1.png" width="50" height="50" alt="Facebook">
+                        <p>Facebook</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://x.com/TecNMAtita" target="_blank">
+                        <img src="X1.png" width="50" height="50" alt="Twitter">
+                        <p>Twitter</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.instagram.com/tecnm_atitalaquia?igsh=MXF4ZGFuOXh2MHVnOA==" target="_blank">
+                        <img src="Insta1.png" width="50" height="50" alt="Instagram">
+                        <p>Instagram</p>
+                    </a>
+                </li>
+               
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+    
+    <script>
+        function showSection(sectionId) {
+            var sections = document.querySelectorAll('.section');
+            sections.forEach(function(section) {
+                section.classList.remove('active');
+            });
+            if(sectionId){
+                var selectedSection = document.getElementById(sectionId);
+                selectedSection.classList.add('active');
+            }
+        }
+
+        // Menú desplegable tipo Google
+        document.getElementById("appsButton").addEventListener("click", function(event) {
+            event.stopPropagation();
+            var dropdown = document.getElementById("appsDropdown");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        });
+
+        window.addEventListener("click", function(event) {
+            var dropdown = document.getElementById("appsDropdown");
+            if (dropdown.style.display === "block" && !event.target.closest('.apps-menu')) {
+                dropdown.style.display = "none";
+            }
+        });
+    </script>
+
+    <main>
+  <div class="welcome-container">
+    <iframe src="../Proy/inicio.html" width="50%" height="500" style="border:none;"></iframe>
+  </div>
+</main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-column">
+                <p>Dirección:<br>
+                Carretera Atitalaquia - Tula Km. 3.5<br>
+                Atitalaquia, Hidalgo, México</p>
+            </div>
+            <div class="footer-column">
+                <p>Realizado por:<br>
+                David Antonio Ordaz<br>
+                Evan Miguel Angel Hernandez Cortes<br>
+                Favio Moreno Diaz<br>
+                Daniela Miranda León<br>
+                Odette Ochoa Esperilla<br>
+                Uriel Cruz Garcia</p>
+            </div>
+            <div class="footer-column">
+                <p>© 2026 Instituto Tecnológico de Atitalaquia<br>
+                Todos los derechos reservados</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
