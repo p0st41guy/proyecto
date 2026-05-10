@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Vocacional ITA - Evaluación</title>
+    
+    <style>
+        :root { 
+            --primario: #1565c0; 
+            --error: #d9534f; 
+            --exito: #2cb2ff; 
+            --alerta: #ffc107; 
+            --fondo: #f0f2f5;
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--fondo); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            overflow-x: hidden;
+        }
+
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+       .toast {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: #333;
+            border-left: 5px solid var(--primario);
+            animation: slideIn 0.4s ease forwards;
+        }
+
+       .toast.error { border-left-color: var(--error); }
+       .toast.success { border-left-color: var(--exito); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { transform: translateY(-20px); opacity: 0; }
+        }
+
+       .card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 500px; 
+            text-align: center; 
+        }
+
+       .hidden { display: none!important; }
+        
+        h2 { margin-top: 0; color: var(--primario); }
+        p { color: #555; }
+        
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background-color: var(--primario); 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: 0.3s; 
+        }
+
+        button:hover { filter: brightness(1.1); }
+        button:disabled { background-color: #ccc; cursor: not-allowed; color: #666; }
+        button.secundario { background-color: #6c757d; }
+        button.secundario:hover { background-color: #5a6268; }
+
+       .progreso { font-size: 13px; color: #666; margin-bottom: 20px; font-weight: bold; }
+        #mostrarPregunta { font-size: 16px; color: #333; font-weight: 600; margin-bottom: 20px; min-height: 60px; display: flex; align-items: center; justify-content: center;}
+
+       .opciones-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+       .opciones-container label {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+       .opciones-container label:hover { background: #e2e6ea; }
+       .opciones-container label.seleccionado {
+            border-color: var(--primario);
+            background-color: #eef5ff;
+            font-weight: bold;
+            color: var(--primario);
+        }
+
+        input[type="radio"] { 
+            accent-color: var(--primario);
+            transform: scale(1.2);
+            margin: 0;
+            cursor: pointer;
+        }
+
+       .botones-test { display: flex; gap: 10px; }
+
+       .carrera-destacada {
+            font-size: 26px;
+            color: var(--exito);
+            margin: 15px 0;
+            font-weight: 900;
+        }
+        
+       .descripcion-perfil {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: justify;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--exito);
+        }
+        
+       .toque-personal {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+            font-style: italic;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <div class="card" id="view-test">
+        <h2>Evaluación ITA</h2>
+        <div class="progreso" id="indicadorProgreso">Pregunta 1 de 13</div>
+        
+        <p id="mostrarPregunta">Cargando...</p>
+        
+        <form class="opciones-container" id="formularioOpciones">
+            <label><input type="radio" name="respuesta" value="0"> Nada de acuerdo</label>
+            <label><input type="radio" name="respuesta" value="1"> Poco de acuerdo</label>
+            <label><input type="radio" name="respuesta" value="2"> De acuerdo</label>
+            <label><input type="radio" name="respuesta" value="3"> Muy de acuerdo</label>
+        </form>
+
+        <div class="botones-test">
+            <button type="button" id="anterior" class="secundario" disabled>Anterior</button>
+            <button type="button" id="siguiente">Siguiente</button>
+        </div>
+    </div>
+
+    <div class="card hidden" id="view-result">
+        <h2 style="color: var(--exito);">¡Evaluación Completada!</h2>
+        <p style="font-size: 18px; font-weight: bold; color: #333;">Felicidades<span id="resultado-nombre"></span>.</p>
+        
+        <p>Analizando tus patrones lógicos, niveles de certeza y perfil académico, el motor de inferencia ha determinado que tu carrera ideal para el Instituto Tecnológico de Atitalaquia es:</p>
+        
+        <div class="carrera-destacada" id="carreraIdeal"></div>
+        <div class="descripcion-perfil" id="descripcionCarrera"></div>
+        
+        <button onclick="window.location.href='inicio.html'">Finalizar y Volver al Inicio</button>
+    </div>
+
+    <script>
+        function notify(mensaje, tipo = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            toast.innerHTML = `<span>${tipo === 'error'? '⚠️' : '✅'}</span> ${mensaje}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = "fadeOut 0.5s ease forwards";
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // Puedes llenar estas variables después usando PHP si lo deseas (Ej. let nombreUsuario = "<?php echo $_SESSION['nombre'];?>";)
+        let nombreUsuario = ""; 
+
+        const basePreguntas = [
+            { c: "Química", t: "[Q] Me resulta fascinante la idea de pasar largas horas experimentando en un laboratorio para descubrir cómo transformar materias primas." },
+            { c: "Mecatrónica", t: "[M] Disfruto analizando profundamente cómo integrar componentes mecánicos móviles con circuitos electrónicos y software." },
+            { c: "Sistemas", t: " Siento una fuerte inclinación por resolver problemas lógicos mediante la creación arquitectónica de algoritmos y software." },
+            { c: "Industrial", t: "[I] Cuando observo un proceso, mi mente piensa constantemente en formas estructurales de hacerlo más rápido, seguro y económico." },
+            { c: "Gestión Empresarial", t: "[G] Me atrae poderosamente la idea de liderar equipos humanos, negociar contratos y planificar estrategias comerciales." },
+            { c: "Química", t: "[Q] Me motiva la necesidad de comprender a nivel físico-químico cómo interactúan diferentes sustancias y procesos industriales." },
+            { c: "Mecatrónica", t: "[M] Siento curiosidad por el desafío intelectual de programar microcontroladores y ensamblar sensores para automatizar maquinaria." },
+            { c: "Sistemas", t: " Me produce gran satisfacción intelectual el diseño estructurado de bases de datos masivas y la ciberseguridad." },
+            { c: "Industrial", t: "[I] Considero estimulante utilizar la estadística para analizar datos operativos, identificar cuellos de botella y mejorar la productividad." },
+            { c: "Gestión Empresarial", t: "[G] Me visualizo evaluando el riesgo financiero, interpretando tendencias del consumidor y estructurando planes de negocios." },
+            { c: "Química", t: "[Q] Estaría dispuesto a investigar metodologías para reducir el impacto ambiental mediante el tratamiento bioquímico de desechos." },
+            { c: "Mecatrónica", t: "[M] Me apasiona la idea de diagnosticar sistemas donde la falla podría estar oculta tanto en un engranaje como en el código." },
+            { c: "Sistemas", t: " Me resulta altamente estimulante el aprendizaje autodidacta continuo sobre nuevos lenguajes de programación y frameworks." }
+        ];
+
+        // Mezclar las preguntas de forma aleatoria (Fisher-Yates)
+        function barajar(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex!= 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        const preguntasDesempate = {
+            "Industrial": "[I] Si tuviera que elegir un rol crítico, preferiría diseñar la logística global de distribución antes que programar el producto en sí.",
+            "Gestión Empresarial": "[G] Entre dos escenarios, prefiero dirigir campañas de marketing y ventas que calcular matemáticamente la eficiencia productiva de una planta.",
+            "Mecatrónica": "[M] Ante un problema complejo, prefiero ensuciarme las manos trabajando con actuadores físicos en lugar de diseñar software virtual.",
+            "Sistemas": " Prefiero pasar mi tiempo escribiendo arquitecturas de código puro o configurando servidores remotos antes que reparar hardware físico.",
+            "Química": "[Q] Me considero sumamente minucioso y preferiría pasar semanas aislando compuestos químicos en lugar de gestionar proyectos corporativos masivos."
+        };
+
+        const descripcionesResultados = {
+            "Química": "Tienes una mente investigadora y un gran interés por la transformación de la materia. Tu perfil es ideal para liderar laboratorios, diseñar nuevos materiales y supervisar procesos industriales de manera segura.",
+            "Mecatrónica": "Tu fascinación por integrar hardware, electrónica y programación te hace perfecto para el mundo de la automatización industrial y la robótica. Tienes la capacidad cognitiva para darle 'inteligencia' y control a la maquinaria moderna.",
+            "Sistemas": "Posees una altísima capacidad de abstracción lógica. Disfrutas construyendo ecosistemas virtuales y resolviendo problemas mediante código estructurado, lo que te convierte en un candidato natural para el desarrollo de software.",
+            "Industrial": "Tu cerebro funciona buscando siempre la máxima eficiencia sistémica. Tienes un perfil analítico altamente demandado para optimizar recursos, logística, cadenas de suministro y mejorar la productividad de cualquier planta o empresa.",
+            "Gestión Empresarial": "Tienes clara madera de líder y una gran visión estratégica para los negocios. Tu habilidad para evaluar riesgos, gestionar recursos financieros y potenciar el capital humano te guiará al éxito corporativo y administrativo."
+        };
+
+        // Textos Híbridos para resultados combinados
+        const combinacionesHibridas = {
+            "Química": {
+                "Mecatrónica": "Además, tu afinidad por la Mecatrónica te da un perfil excelente para automatizar laboratorios o diseñar instrumentación química de alta precisión.",
+                "Sistemas": "Tu fuerte interés secundario en Sistemas te permitiría destacar en la bioinformática y el análisis de datos a nivel molecular mediante software.",
+                "Industrial": "Tu inclinación hacia la Ingeniería Industrial sugiere que serías brillante escalando reacciones de laboratorio a nivel de planta y optimizando la cadena de suministro química.",
+                "Gestión Empresarial": "Tu interés en Gestión Empresarial indica que tienes potencial no solo para investigar, sino para dirigir empresas farmacéuticas o lanzar tu propia línea de productos sustentables."
+            },
+            "Mecatrónica": {
+                "Química": "Debido a tus respuestas y a tu relación con el cuidado ambiental, podrías enfocarte en crear sistemas mecatrónicos y robots diseñados específicamente para disminuir el impacto ambiental y automatizar la industria sustentable.",
+                "Sistemas": "Tu alta afinidad con Sistemas Computacionales te potenciará para crear software embebido complejo, inteligencia artificial o Internet de las Cosas (IoT) para tus robots.",
+                "Industrial": "Con tu interés en el área Industrial, tienes el perfil perfecto para liderar la Industria 4.0, diseñando líneas de ensamblaje totalmente automatizadas y ultra eficientes.",
+                "Gestión Empresarial": "Tu visión de Gestión Empresarial te otorga madera de líder para dirigir proyectos tecnológicos a gran escala o fundar tu propia startup de innovación en hardware."
+            },
+            "Sistemas": {
+                "Química": "Tu afinidad por la Química te abre puertas en el desarrollo de software especializado para la simulación de materiales y procesos químicos.",
+                "Mecatrónica": "Con tu interés en Mecatrónica, podrías destacar programando el 'cerebro' de máquinas físicas y sistemas de control automatizados.",
+                "Industrial": "Tu lado de Ingeniería Industrial te hace ideal para desarrollar software empresarial tipo ERP, optimizando procesos corporativos y logística a través de código.",
+                "Gestión Empresarial": "Tu inclinación a la Gestión te da el perfil de un Director de Tecnología (CTO), capaz de liderar equipos de desarrollo de software y startups tecnológicas."
+            },
+            "Industrial": {
+                "Química": "Tu interés en Química sugiere que serías un excelente ingeniero de planta en la industria de la transformación, optimizando la manufactura de plásticos, alimentos o energéticos.",
+                "Mecatrónica": "Al interesarte también la Mecatrónica, posees la visión ideal para integrar brazos robóticos dentro de la optimización de las líneas de producción.",
+                "Sistemas": "Tu afinidad por los Sistemas te permitirá utilizar Big Data y analítica para predecir fallas y optimizar procesos logísticos a un nivel superior.",
+                "Gestión Empresarial": "Tu marcado interés en la Gestión Empresarial complementa perfectamente tu perfil para escalar rápidamente a la gerencia de operaciones de una multinacional."
+            },
+            "Gestión Empresarial": {
+                "Química": "Tu afinidad hacia la Química te coloca en una posición estratégica para administrar industrias de transformación, como el negocio de cosméticos, alimentos o petroquímica.",
+                "Mecatrónica": "Con tu visión en Mecatrónica, serías el gerente ideal para empresas de alta tecnología, sabiendo cómo vender y administrar productos de hardware y robótica.",
+                "Sistemas": "Tu interés en Sistemas te convierte en un gestor moderno, ideal para dirigir empresas de software, e-commerce o liderar la transformación digital corporativa.",
+                "Industrial": "Tu lado Industrial te da un enfoque sumamente analítico, haciéndote excelente en la gestión de la cadena de suministro, calidad total y reducción de costos operativos."
+            }
+        };
+
+        // Iniciar con las preguntas aleatorias
+        let preguntasActivas = barajar([...basePreguntas]);
+        let respuestas = Array(15).fill(null);
+        let indice = 0;
+
+        const uiPregunta = document.getElementById("mostrarPregunta");
+        const uiProgreso = document.getElementById("indicadorProgreso");
+        const btnSiguiente = document.getElementById("siguiente");
+        const btnAnterior = document.getElementById("anterior");
+        const opcionesLabels = document.querySelectorAll('.opciones-container label');
+
+        document.querySelectorAll('input[name="respuesta"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                opcionesLabels.forEach(lbl => lbl.classList.remove('seleccionado'));
+                if (this.checked) this.parentElement.classList.add('seleccionado');
+            });
+        });
+
+        function renderizarPregunta() {
+            uiPregunta.textContent = preguntasActivas[indice].t;
+            uiProgreso.textContent = `Pregunta ${indice + 1} de ${preguntasActivas.length}`;
+            opcionesLabels.forEach(lbl => lbl.classList.remove('seleccionado'));
+            
+            document.querySelectorAll('input[name="respuesta"]').forEach(radio => {
+                if (respuestas[indice] && radio.value === respuestas[indice].valor.toString()) {
+                    radio.checked = true;
+                    radio.parentElement.classList.add('seleccionado');
+                } else {
+                    radio.checked = false;
+                }
+            });
+            btnAnterior.disabled = (indice === 0);
+        }
+
+        function evaluarResultados() {
+            let puntajes = { "Química": 0, "Mecatrónica": 0, "Sistemas": 0, "Industrial": 0, "Gestión Empresarial": 0 };
+            let peso3 = { "Química": 0, "Mecatrónica": 0, "Sistemas": 0, "Industrial": 0, "Gestión Empresarial": 0 };
+            let peso2 = { "Química": 0, "Mecatrónica": 0, "Sistemas": 0, "Industrial": 0, "Gestión Empresarial": 0 };
+            
+            let prioridad = { "Sistemas": 5, "Mecatrónica": 4, "Industrial": 3, "Gestión Empresarial": 2, "Química": 1 };
+
+            for (let i = 0; i <= indice; i++) {
+                if (respuestas[i]) {
+                    let c = respuestas[i].carrera;
+                    let v = respuestas[i].valor;
+                    puntajes[c] += v;
+                    if (v === 3) peso3[c]++;
+                    if (v === 2) peso2[c]++;
+                }
+            }
+
+            return Object.keys(puntajes).map(c => ({
+                carrera: c,
+                score: puntajes[c],
+                p3: peso3[c],
+                p2: peso2[c],
+                prio: prioridad[c]
+            })).sort((a, b) => {
+                if (b.score!== a.score) return b.score - a.score; 
+                if (b.p3!== a.p3) return b.p3 - a.p3;             
+                if (b.p2!== a.p2) return b.p2 - a.p2;             
+                return b.prio - a.prio;                            
+            });
+        }
+
+        btnSiguiente.addEventListener("click", () => {
+            const seleccion = document.querySelector('input[name="respuesta"]:checked');
+            if (!seleccion) {
+                notify("Por favor, selecciona una opción antes de continuar.", "error");
+                return;
+            }
+
+            respuestas[indice] = {
+                carrera: preguntasActivas[indice].c,
+                valor: parseInt(seleccion.value, 10)
+            };
+
+            if (indice === 12 && preguntasActivas.length === 13) {
+                let ranking = evaluarResultados();
+                
+                if (ranking[0].score === ranking[1].score && ranking[0].score > 0) {
+                    let carreraA = ranking[0].carrera;
+                    let carreraB = ranking[1].carrera;
+                    
+                    preguntasActivas.push({ c: carreraA, t: preguntasDesempate[carreraA] });
+                    preguntasActivas.push({ c: carreraB, t: preguntasDesempate[carreraB] });
+                }
+            }
+
+            if (indice < preguntasActivas.length - 1) {
+                indice++;
+                renderizarPregunta();
+            } else {
+                let rankingFinal = evaluarResultados();
+                
+                let carreraGanadora = rankingFinal[0].carrera;
+                let carreraSecundaria = rankingFinal[1] ? rankingFinal[1].carrera : null;
+
+                document.getElementById("view-test").classList.add("hidden");
+                document.getElementById("view-result").classList.remove("hidden");
+                
+                if (nombreUsuario !== "") {
+                    document.getElementById("resultado-nombre").textContent = nombreUsuario;
+                }
+
+                const contenedorCarrera = document.getElementById("carreraIdeal");
+                const contenedorDesc = document.getElementById("descripcionCarrera");
+
+                if (carreraGanadora === "Química" || carreraGanadora === "Mecatrónica") {
+                    contenedorCarrera.textContent = `Ingeniería ${carreraGanadora}`;
+                } else {
+                    contenedorCarrera.textContent = `Ingeniería en ${carreraGanadora}`;
+                }
+                
+                let textoPrincipal = descripcionesResultados[carreraGanadora];
+                let textoHibrido = "";
+                
+                if (carreraSecundaria && rankingFinal[1].score > 0) {
+                    textoHibrido = `<div class="toque-personal"><strong>🌟 Tu perfil interdisciplinario:</strong> ${combinacionesHibridas[carreraGanadora][carreraSecundaria]}</div>`;
+                }
+                
+                contenedorDesc.innerHTML = `<p>${textoPrincipal}</p>${textoHibrido}`;
+                                            
+                notify("Test completado y evaluado con éxito", "success");
+
+                fetch("guardar_resultado.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "carrera=" + encodeURIComponent(carreraGanadora)
+                })
+              .then(res => res.text())
+              .then(data => {
+                    if (data.trim()!== "ok") {
+                        console.error("Error guardando el resultado:", data);
+                    }
+                })
+              .catch(err => console.error("Error de conexión:", err));
+            }
+        });
+
+        btnAnterior.addEventListener("click", () => {
+            if (indice > 0) {
+                indice--;
+                renderizarPregunta();
+            }
+        });
+
+        // Iniciar el renderizado
+        renderizarPregunta();
+    </script>
+</body>
+</html>
